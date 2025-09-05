@@ -2,7 +2,7 @@
 
 :root {
   /* Color Palette */
-  --primary-color: ##132865;        /* Deep sea blue */
+  --primary-color: #132865;        /* Deep sea blue */
   --primary-dark: #1e40af;         /* Darker blue for hover states */
   --primary-light: #3b82f6;        /* Lighter blue for accents */
   --secondary-color: #64748b;      /* Slate gray */
@@ -259,4 +259,5 @@ a:hover {
   white-space: nowrap;
   border: 0;
 }
+
 
