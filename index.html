@@ -132,7 +132,7 @@
 
                 <button onclick="navigate('generic-page', 'About & Trust', 'Learn about K2 Insurance.')" class="text-slate-600 hover:text-blue-600 transition nav-link" data-target="about">About & Trust</button>
                 <button onclick="navigate('generic-page', 'Coverage Areas', 'See all Florida counties we serve.')" class="text-slate-600 hover:text-blue-600 transition nav-link" data-target="coverage">Coverage Areas</button>
-                <button onclick="navigate('generic-page', 'Insurance Resources', 'Read our blog and resources.')" class="text-slate-600 hover:text-blue-600 transition nav-link" data-target="blog">Resources</button>
+                <button onclick="navigate('generic-page', 'Insurance Blog', 'Read our blog.')" class="text-slate-600 hover:text-blue-600 transition nav-link" data-target="blog">Blog</button>
                 <button onclick="navigate('generic-page', 'Contact / Quote', 'Get a fast quote.')" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-semibold transition shadow-md hover:shadow-lg">
                     Get a Quote
                 </button>
@@ -471,20 +471,6 @@
                 
                 <!-- NAP & Brand -->
                 <div>
-                    <div class="flex items-center mb-6">
-                        <!-- insert logo.png here -->
-                        <img 
-                            src="./assets/logo.png" 
-                            alt="K2 Insurance Logo" 
-                            class="h-20 w-auto drop-shadow-xl" 
-                            onerror="this.style.display='none'; document.getElementById('fallback-footer-logo').style.display='flex';" 
-                        />
-                        <!-- Fallback icon and text if logo.png is not found -->
-                        <div id="fallback-footer-logo" style="display: none;" class="items-center">
-                            <i data-lucide="shield" class="text-blue-500 mr-2 w-8 h-8"></i>
-                            <span class="text-2xl font-bold text-white tracking-tight">K2 Insurance</span>
-                        </div>
-                    </div>
                     <p class="mb-6 text-sm leading-relaxed">Protecting Florida families and businesses with comprehensive, tailored insurance solutions. We compare the top carriers to find your perfect fit.</p>
                     <div class="space-y-3 text-sm">
                         <p class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-3 text-blue-500"></i> 123 Palmetto Park Rd,<br>Boca Raton, FL 33432</p>
@@ -522,7 +508,7 @@
                     <ul class="space-y-3 text-sm mb-6">
                         <li><button onclick="navigate('generic-page', 'About', 'About')" class="hover:text-orange-400 transition">About Our Agency</button></li>
                         <li><button onclick="navigate('generic-page', 'Reviews', 'Reviews')" class="hover:text-orange-400 transition">Customer Reviews</button></li>
-                        <li><button onclick="navigate('generic-page', 'Resources', 'Resources')" class="hover:text-orange-400 transition">Insurance Resources</button></li>
+                        <li><button onclick="navigate('generic-page', 'Blog', 'Blog')" class="hover:text-orange-400 transition">Insurance Blog</button></li>
                     </ul>
                     <div class="bg-slate-800 p-4 rounded-lg flex items-start space-x-3 border border-slate-700">
                         <i data-lucide="star" class="text-yellow-400 fill-current flex-shrink-0 w-6 h-6"></i>
@@ -571,7 +557,7 @@
             [...CARRIERS, ...CARRIERS].forEach(carrier => {
                 const imageName = `${carrier.toLowerCase().replace(/\s+/g, '-')}.webp`;
                 carouselHTML += `
-                    <div class="flex-shrink-0 flex items-center justify-center w-32 h-16 grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition duration-300">
+                    <div class="flex-shrink-0 flex items-center justify-center w-32 h-16 transition duration-300 hover:scale-105">
                         <img 
                             src="./assets/${imageName}" 
                             alt="${carrier} logo"
