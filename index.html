@@ -1,200 +1,769 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K2 Insurance - Your Trusted Insurance Partner</title>
-    <meta name="description" content="K2 Insurance provides comprehensive insurance solutions for individuals and businesses. Get quotes for auto, home, life, and business insurance today.">
-    <meta name="keywords" content="insurance, auto insurance, home insurance, life insurance, business insurance, quotes">
-    <meta name="author" content="K2 Insurance">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="K2 Insurance - Your Trusted Insurance Partner">
-    <meta property="og:description" content="Comprehensive insurance solutions for individuals and businesses. Get your quote today.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://k2-insurance-site.github.io">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="assets/css/theme.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-</head>
-<body>
-    <!-- Top Banner -->
-    <div class="top-banner">
-        <div class="container">
-            <div class="banner-info">
-                <a href="tel:+1-555-123-4567">
-                    📞 (555) 123-4567
-                </a>
-                <a href="mailto:info@k2insurance.com">
-                    ✉️ info@k2insurance.com
-                </a>
-            </div>
-            <div class="banner-cta">
-                <a href="contact.html#quote" class="btn btn-secondary">Get a Quote</a>
-            </div>
-        </div>
-    </div>
+import React, { useState, useEffect } from 'react';
+import { 
+  Shield, Home, Droplets, Car, Umbrella, Building, Ship, Gem, 
+  Menu, X, ChevronRight, Phone, MapPin, CheckCircle, Award, 
+  ArrowRight, Star, FileText, AlertTriangle
+} from 'lucide-react';
 
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <a href="index.html" class="logo">
-                <img src="assets/img/logo.png" alt="K2 Insurance Logo" style="height: 50px; width: auto;">
-                <span class="logo-text" style="display: none;">K2 Insurance</span>
+// --- MOCK DATA ---
+const CARRIERS = [
+  "Geico", "J&J", "Southern Oak", "Amwins", "Olympus", "Progressive", 
+  "Bridge Specialty", "Citizens", "Patriot Select", "Neptune", 
+  "Loggerhead", "QBE", "Bankers", "Orchid", "Orion180"
+];
+
+const REVIEWS = [
+  { name: "Sarah M.", location: "Boca Raton, FL", text: "K2 Insurance saved me $800 on my homeowners policy. Their team explained everything perfectly.", rating: 5 },
+  { name: "David L.", location: "Palm Beach, FL", text: "Finally an agency that understands flood zones. Got my private flood insurance bound in 24 hours.", rating: 5 },
+  { name: "Maria G.", location: "Fort Lauderdale, FL", text: "Highly recommend for commercial insurance. They handle all our business policies with great care.", rating: 5 }
+];
+
+const BLOG_POSTS = [
+  { title: "Do I need flood insurance in an X zone?", category: "Flood" },
+  { title: "RCV vs ACV — What clients misunderstand", category: "Homeowners" },
+  { title: "Umbrella policy explained simply", category: "Liability" },
+  { title: "Top 5 mistakes homeowners make when filing a claim", category: "Claims" }
+];
+
+const COVERAGE_AREAS = [
+  { county: "Palm Beach County", cities: ["Boca Raton", "Delray Beach", "Boynton Beach", "West Palm Beach", "Wellington"] },
+  { county: "Broward County", cities: ["Fort Lauderdale", "Hollywood", "Pompano Beach", "Coral Springs", "Pembroke Pines"] },
+  { county: "Miami-Dade County", cities: ["Miami", "Miami Beach", "Coral Gables", "Aventura", "Kendall"] },
+  { county: "Collier County", cities: ["Naples", "Marco Island", "Everglades City"] }
+];
+
+// --- SEO HELPER COMPONENT ---
+// In a real Next.js/Gatsby app, this would use next/head or react-helmet
+const SEOHead = ({ title, description, schema }) => {
+  useEffect(() => {
+    document.title = title;
+    // Mocking meta description update
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = description;
+  }, [title, description]);
+
+  return (
+    <>
+      {schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
+    </>
+  );
+};
+
+export default function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
+  const navigate = (page) => {
+    setCurrentPage(page);
+    setMobileMenuOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col font-sans text-slate-800 bg-slate-50">
+      <style>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-scroll {
+          display: flex;
+          width: 200%;
+          animation: scroll 30s linear infinite;
+        }
+        .animate-scroll:hover {
+          animation-play-state: paused;
+        }
+        .glass-nav {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+        }
+      `}</style>
+
+      {/* --- TOP BAR (E-E-A-T & Contact) --- */}
+      <div className="bg-blue-900 text-white py-2 text-sm hidden md:block">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="flex space-x-6">
+            <span className="flex items-center"><MapPin size={14} className="mr-1 text-blue-300"/> Florida's Trusted Insurance Brokers</span>
+            <span className="flex items-center"><Award size={14} className="mr-1 text-blue-300"/> Lic #FL-1234567</span>
+          </div>
+          <div className="flex space-x-6 font-semibold">
+            <a href="tel:+18005550199" className="flex items-center hover:text-orange-400 transition">
+              <Phone size={14} className="mr-2"/> (800) 555-0199
             </a>
+            <button onClick={() => navigate('contact')} className="text-orange-400 hover:text-orange-300 transition">Get a Fast Quote</button>
+          </div>
+        </div>
+      </div>
+
+      {/* --- MAIN NAVIGATION --- */}
+      <header className="sticky top-0 z-50 glass-nav border-b border-slate-200 shadow-sm">
+    <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="flex items-center cursor-pointer" onClick={() => navigate('home')}>
+        {/* insert logo.png here */}
+        {/* Increased height and removed redundant HTML text since the logo contains the text */}
+        <img 
+          src="/logo.png" 
+          alt="K2 Insurance Logo" 
+          className="h-16 w-auto" 
+          onError={(e) => { 
+            e.target.style.display = 'none'; 
+            document.getElementById('fallback-header-logo').style.display = 'flex'; 
+          }} 
+        />
+        {/* Fallback icon and text if logo.png is not found */}
+        <div id="fallback-header-logo" style={{ display: 'none' }} className="items-center">
+          <div className="bg-blue-600 text-white p-2 rounded-lg mr-2">
+            <Shield size={28} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-blue-900 leading-none tracking-tight">K2 Insurance</h1>
+            <span className="text-xs text-slate-500 font-medium tracking-widest uppercase">Protecting Florida</span>
+          </div>
+        </div>
+      </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex space-x-8 items-center font-medium">
+            <button onClick={() => navigate('home')} className={`hover:text-blue-600 transition ${currentPage === 'home' ? 'text-blue-600' : 'text-slate-600'}`}>Home</button>
             
-            <nav class="nav">
-                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">☰</button>
-                <ul class="nav-list">
-                    <li><a href="index.html" class="nav-link">Home</a></li>
-                    <li><a href="about.html" class="nav-link">About Us</a></li>
-                    <li><a href="services.html" class="nav-link">Services</a></li>
-                    <li><a href="contact.html" class="nav-link">Contact</a></li>
-                    <li><a href="companies.html" class="nav-link">Companies</a></li>
-                    <li><a href="faq.html" class="nav-link">FAQ</a></li>
+            <div className="relative group">
+              <button onClick={() => navigate('solutions-hub')} className={`hover:text-blue-600 transition flex items-center ${currentPage.includes('solution') ? 'text-blue-600' : 'text-slate-600'}`}>
+                Insurance Solutions <ChevronRight size={16} className="ml-1 rotate-90" />
+              </button>
+              {/* Dropdown menu */}
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-200 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-50">
+                <button onClick={() => navigate('solution-home')} className="text-left px-4 py-2 hover:bg-slate-50 hover:text-blue-600 flex items-center"><Home size={16} className="mr-2"/> Homeowners</button>
+                <button onClick={() => navigate('solution-flood')} className="text-left px-4 py-2 hover:bg-slate-50 hover:text-blue-600 flex items-center"><Droplets size={16} className="mr-2"/> Flood</button>
+                <button onClick={() => navigate('solution-auto')} className="text-left px-4 py-2 hover:bg-slate-50 hover:text-blue-600 flex items-center"><Car size={16} className="mr-2"/> Auto</button>
+                <button onClick={() => navigate('solution-umbrella')} className="text-left px-4 py-2 hover:bg-slate-50 hover:text-blue-600 flex items-center"><Umbrella size={16} className="mr-2"/> Umbrella</button>
+                <button onClick={() => navigate('solutions-hub')} className="text-left px-4 py-2 hover:bg-slate-50 text-blue-600 text-sm font-semibold border-t mt-2 pt-2">View All Solutions &rarr;</button>
+              </div>
+            </div>
+
+            <button onClick={() => navigate('about')} className={`hover:text-blue-600 transition ${currentPage === 'about' ? 'text-blue-600' : 'text-slate-600'}`}>About & Trust</button>
+            <button onClick={() => navigate('coverage')} className={`hover:text-blue-600 transition ${currentPage === 'coverage' ? 'text-blue-600' : 'text-slate-600'}`}>Coverage Areas</button>
+            <button onClick={() => navigate('blog')} className={`hover:text-blue-600 transition ${currentPage === 'blog' ? 'text-blue-600' : 'text-slate-600'}`}>Resources</button>
+            <button onClick={() => navigate('contact')} className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-semibold transition shadow-md hover:shadow-lg">
+              Get a Quote
+            </button>
+          </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button className="lg:hidden text-slate-800" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+
+        {/* Mobile Nav */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl flex flex-col py-4 px-4 space-y-4">
+            <button onClick={() => navigate('home')} className="text-left font-medium text-lg border-b pb-2">Home</button>
+            <button onClick={() => navigate('solution-home')} className="text-left font-medium text-lg border-b pb-2 flex items-center"><Home size={18} className="mr-2 text-blue-600"/> Homeowners</button>
+            <button onClick={() => navigate('solution-flood')} className="text-left font-medium text-lg border-b pb-2 flex items-center"><Droplets size={18} className="mr-2 text-blue-600"/> Flood</button>
+            <button onClick={() => navigate('solutions-hub')} className="text-left font-medium text-lg border-b pb-2">All Solutions</button>
+            <button onClick={() => navigate('about')} className="text-left font-medium text-lg border-b pb-2">About & Trust</button>
+            <button onClick={() => navigate('coverage')} className="text-left font-medium text-lg border-b pb-2">Coverage Areas</button>
+            <button onClick={() => navigate('blog')} className="text-left font-medium text-lg border-b pb-2">Resources</button>
+            <button onClick={() => navigate('contact')} className="bg-orange-500 text-white px-6 py-3 rounded-xl font-bold text-center">Get a Quote</button>
+          </div>
+        )}
+      </header>
+
+      {/* --- PAGE ROUTING --- */}
+      <main className="flex-grow">
+        {currentPage === 'home' && <HomePage navigate={navigate} />}
+        {currentPage === 'solutions-hub' && <SolutionsHub navigate={navigate} />}
+        {currentPage === 'solution-home' && <HomeownersPage navigate={navigate} />}
+        {currentPage === 'solution-flood' && <FloodPage navigate={navigate} />}
+        {/* Fallbacks for unbuilt pages */}
+        {['solution-auto', 'solution-umbrella', 'about', 'coverage', 'blog', 'contact'].includes(currentPage) && (
+          <GenericPage title={currentPage.replace('solution-', '').replace('-', ' ').toUpperCase()} />
+        )}
+      </main>
+
+      {/* --- FOOTER (Local SEO & Trust) --- */}
+      <footer className="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            
+            {/* NAP & Brand */}
+        <div>
+          <div className="flex items-center mb-6">
+            {/* insert logo.png here */}
+            {/* Removed the 'invert' class so the 3D silver/blue colors show, and added a drop shadow */}
+            <img 
+              src="/logo.png" 
+              alt="K2 Insurance Logo" 
+              className="h-20 w-auto drop-shadow-xl" 
+              onError={(e) => { 
+                e.target.style.display = 'none'; 
+                document.getElementById('fallback-footer-logo').style.display = 'flex'; 
+              }} 
+            />
+            {/* Fallback icon and text if logo.png is not found */}
+            <div id="fallback-footer-logo" style={{ display: 'none' }} className="items-center">
+              <Shield size={32} className="text-blue-500 mr-2" />
+              <span className="text-2xl font-bold text-white tracking-tight">K2 Insurance</span>
+            </div>
+          </div>
+          <p className="mb-6 text-sm leading-relaxed">Protecting Florida families and businesses with comprehensive, tailored insurance solutions. We compare the top carriers to find your perfect fit.</p>
+              <div className="space-y-3 text-sm">
+                <p className="flex items-center"><MapPin size={16} className="mr-3 text-blue-500"/> 123 Palmetto Park Rd,<br/>Boca Raton, FL 33432</p>
+                <p className="flex items-center"><Phone size={16} className="mr-3 text-blue-500"/> (800) 555-0199</p>
+                <p className="flex items-center"><Award size={16} className="mr-3 text-blue-500"/> License #FL-1234567</p>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Insurance Solutions</h3>
+              <ul className="space-y-3 text-sm">
+                <li><button onClick={() => navigate('solution-home')} className="hover:text-orange-400 transition">Homeowners Insurance</button></li>
+                <li><button onClick={() => navigate('solution-flood')} className="hover:text-orange-400 transition">Flood Insurance Florida</button></li>
+                <li><button onClick={() => navigate('solution-auto')} className="hover:text-orange-400 transition">Best Auto Insurance Rates</button></li>
+                <li><button onClick={() => navigate('solution-umbrella')} className="hover:text-orange-400 transition">Umbrella Insurance Policy</button></li>
+                <li><button onClick={() => navigate('solutions-hub')} className="hover:text-orange-400 transition">Commercial Insurance Broker</button></li>
+              </ul>
+            </div>
+
+            {/* Local SEO / Areas */}
+            <div>
+              <h3 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Service Areas</h3>
+              <ul className="space-y-3 text-sm">
+                <li><button onClick={() => navigate('coverage')} className="hover:text-orange-400 transition">Boca Raton Home Insurance</button></li>
+                <li><button onClick={() => navigate('coverage')} className="hover:text-orange-400 transition">Palm Beach County Flood</button></li>
+                <li><button onClick={() => navigate('coverage')} className="hover:text-orange-400 transition">Fort Lauderdale Commercial</button></li>
+                <li><button onClick={() => navigate('coverage')} className="hover:text-orange-400 transition">Miami Auto Insurance</button></li>
+                <li><button onClick={() => navigate('coverage')} className="hover:text-orange-400 transition">View All Florida Counties</button></li>
+              </ul>
+            </div>
+
+            {/* Trust & E-E-A-T */}
+            <div>
+              <h3 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Company & Trust</h3>
+              <ul className="space-y-3 text-sm mb-6">
+                <li><button onClick={() => navigate('about')} className="hover:text-orange-400 transition">About Our Agency</button></li>
+                <li><button onClick={() => navigate('about')} className="hover:text-orange-400 transition">Customer Reviews</button></li>
+                <li><button onClick={() => navigate('blog')} className="hover:text-orange-400 transition">Insurance Resources</button></li>
+                <li><button onClick={() => navigate('contact')} className="hover:text-orange-400 transition">Privacy Policy / Terms</button></li>
+              </ul>
+              <div className="bg-slate-800 p-4 rounded-lg flex items-start space-x-3 border border-slate-700">
+                <Star className="text-yellow-400 fill-current flex-shrink-0" size={24}/>
+                <div>
+                  <p className="text-white font-bold text-sm">4.9/5 Average Rating</p>
+                  <p className="text-xs text-slate-400">Based on 250+ Google Reviews</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-500">
+            <p>&copy; {new Date().getFullYear()} K2 Insurance. All rights reserved. | Built for High SEO Performance.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ==========================================
+// PAGE COMPONENTS
+// ==========================================
+
+function HomePage({ navigate }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "K2 Insurance",
+    // insert logo.png here (update URL when hosted)
+    "image": "https://yourwebsite.com/logo.png",
+    "url": "https://www.k2insurance.com",
+    "telephone": "+18005550199",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Palmetto Park Rd",
+      "addressLocality": "Boca Raton",
+      "addressRegion": "FL",
+      "postalCode": "33432",
+      "addressCountry": "US"
+    }
+  };
+
+  return (
+    <div className="animate-fade-in">
+      <SEOHead 
+        title="K2 Insurance | Top Rated Insurance Agency in Florida"
+        description="Get the best insurance rates in Florida. K2 Insurance specializes in homeowners, flood, auto, and commercial policies. Compare quotes from 15+ top carriers."
+        schema={schema}
+      />
+
+      {/* Hero Section - High Intent Keywords & CTA */}
+      <section className="relative bg-blue-900 text-white overflow-hidden py-24 lg:py-32">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)' }}></div>
+        <div className="container mx-auto px-4 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center bg-blue-800/50 rounded-full px-4 py-1.5 text-sm font-medium mb-6 border border-blue-700">
+              <Star className="text-yellow-400 w-4 h-4 mr-2 fill-current" /> 4.9/5 Google Reviews in Florida
+            </div>
+            {/* SEO H1: Target buyer-intent + local */}
+            <h1 className="text-4xl lg:text-6xl font-extrabold leading-tight mb-6">
+              Home & Flood Insurance <span className="text-orange-400">Tailored for Florida</span>
+            </h1>
+            <p className="text-lg text-blue-100 mb-8 max-w-xl leading-relaxed">
+              We compare rates from 15+ top carriers including Citizens, Olympus, and Neptune to find you the exact coverage you need at the best price. 
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button onClick={() => navigate('contact')} className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-xl shadow-orange-500/20 flex items-center justify-center">
+                Get a Free Quote <ArrowRight className="ml-2" size={20} />
+              </button>
+              <button onClick={() => navigate('solutions-hub')} className="bg-white/10 hover:bg-white/20 text-white border border-blue-400/30 px-8 py-4 rounded-xl font-bold text-lg transition flex items-center justify-center">
+                Explore Coverage
+              </button>
+            </div>
+          </div>
+          
+          {/* Trust Building Element in Hero */}
+          <div className="hidden lg:block relative">
+             <div className="bg-white text-slate-800 p-8 rounded-2xl shadow-2xl relative z-10">
+               <h3 className="font-bold text-xl mb-4 text-center">Why Floridians Choose Us</h3>
+               <ul className="space-y-4">
+                 <li className="flex items-start"><CheckCircle className="text-green-500 mt-1 mr-3 flex-shrink-0"/> <span className="font-medium">Independent Brokers:</span> We work for you, not the carriers.</li>
+                 <li className="flex items-start"><CheckCircle className="text-green-500 mt-1 mr-3 flex-shrink-0"/> <span className="font-medium">Deep Florida Expertise:</span> We know AE flood zones, hurricane deductibles, and local risks.</li>
+                 <li className="flex items-start"><CheckCircle className="text-green-500 mt-1 mr-3 flex-shrink-0"/> <span className="font-medium">Fast, Digital Quotes:</span> Minimal friction, absolute clarity.</li>
+               </ul>
+             </div>
+             {/* Decorative background shape */}
+             <div className="absolute top-10 -right-10 w-full h-full bg-blue-600 rounded-2xl -z-10 opacity-50 blur-2xl"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Carrier Carousel - Trust Signal */}
+  <section className="bg-white py-10 border-b border-slate-200 overflow-hidden">
+    <div className="container mx-auto px-4 mb-6 text-center">
+      <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Trusted by Top Insurance Carriers</h2>
+    </div>
+    <div className="relative w-full flex overflow-hidden">
+      <div className="animate-scroll items-center gap-12 px-6">
+        {/* Duplicate for seamless loop */}
+        {[...CARRIERS, ...CARRIERS].map((carrier, idx) => {
+          // Formats names like "Progressive" to "progressive.png" or "Southern Oak" to "southern-oak.png"
+          const imageName = `${carrier.toLowerCase().replace(/\s+/g, '-')}.png`;
+          
+          return (
+            <div key={idx} className="flex-shrink-0 flex items-center justify-center w-32 h-16 grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition duration-300">
+              {/* insert progressive.png here (dynamically loads based on carrier name) */}
+              {/* Just drop files like progressive.png, geico.png, etc. into your folder */}
+              <img 
+                src={`/${imageName}`} 
+                alt={`${carrier} logo`}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => { 
+                  e.target.style.display = 'none'; 
+                  e.target.nextSibling.style.display = 'block'; 
+                }}
+              />
+              {/* Fallback text if the image (e.g. progressive.png) is not found */}
+              <span className="text-xl font-black text-slate-300 uppercase tracking-wider" style={{ display: 'none' }}>
+                {carrier}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  {/* Core Solutions Grid (Money Pages routing) */}
+      <section className="py-24 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Comprehensive Insurance Solutions</h2>
+            <p className="text-slate-600 text-lg">Protecting what matters most with specialized policies designed for the unique risks of living and doing business in Florida.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <ServiceCard 
+              icon={<Home size={32} />} 
+              title="Homeowners" 
+              desc="Protect your largest asset against fire, theft, and hurricane damage."
+              onClick={() => navigate('solution-home')}
+            />
+            <ServiceCard 
+              icon={<Droplets size={32} />} 
+              title="Flood Insurance" 
+              desc="Essential protection. Did you know flood is NOT covered under home insurance?"
+              onClick={() => navigate('solution-flood')}
+              featured={true}
+            />
+            <ServiceCard 
+              icon={<Car size={32} />} 
+              title="Auto Insurance" 
+              desc="Comprehensive and collision coverage with the best rates in Florida."
+              onClick={() => navigate('solution-auto')}
+            />
+            <ServiceCard 
+              icon={<Building size={32} />} 
+              title="Commercial" 
+              desc="Tailored risk management and brokerage for Florida businesses."
+              onClick={() => navigate('solutions-hub')}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof / Reviews Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">What Our Clients Say</h2>
+            <p className="text-slate-600">Real reviews from property owners across Florida.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {REVIEWS.map((review, idx) => (
+              <div key={idx} className="bg-slate-50 p-8 rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex text-yellow-400 mb-4">
+                  {[...Array(review.rating)].map((_, i) => <Star key={i} size={18} className="fill-current" />)}
+                </div>
+                <p className="text-slate-700 italic mb-6">"{review.text}"</p>
+                <div className="font-bold text-slate-900">{review.name}</div>
+                <div className="text-sm text-slate-500 flex items-center mt-1"><MapPin size={12} className="mr-1"/> {review.location}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function SolutionsHub({ navigate }) {
+  const ALL_SOLUTIONS = [
+    { title: "Homeowners Insurance", icon: <Home/>, link: 'solution-home' },
+    { title: "Flood Insurance", icon: <Droplets/>, link: 'solution-flood' },
+    { title: "Auto Insurance", icon: <Car/>, link: 'solution-auto' },
+    { title: "Umbrella Insurance", icon: <Umbrella/>, link: 'solution-umbrella' },
+    { title: "Commercial Insurance", icon: <Building/>, link: 'solution-commercial' },
+    { title: "Renters Insurance", icon: <Building/>, link: 'solution-renters' },
+    { title: "Boat / Watercraft", icon: <Ship/>, link: 'solution-boat' },
+    { title: "Valuables / Scheduled Items", icon: <Gem/>, link: 'solution-valuables' },
+  ];
+
+  return (
+    <div className="py-20 bg-slate-50">
+      <SEOHead title="Insurance Solutions | K2 Insurance" description="Browse our comprehensive list of personal and commercial insurance solutions." />
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold text-slate-900 mb-12 text-center">Our Insurance Solutions</h1>
+        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {ALL_SOLUTIONS.map((sol, idx) => (
+            <div key={idx} onClick={() => navigate(sol.link)} className="bg-white p-6 rounded-xl border border-slate-200 hover:border-blue-500 hover:shadow-lg transition cursor-pointer flex flex-col items-center text-center group">
+              <div className="text-blue-500 mb-4 group-hover:scale-110 transition duration-300">
+                {React.cloneElement(sol.icon, { size: 48 })}
+              </div>
+              <h3 className="font-bold text-lg text-slate-900">{sol.title}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------
+// MONEY PAGE 1: HOMEOWNERS (SEO Optimized Structure)
+// ------------------------------------------------------------------
+function HomeownersPage({ navigate }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "What is the difference between RCV and ACV?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Replacement Cost Value (RCV) pays to replace your property with new items of similar kind and quality without deducting for depreciation. Actual Cash Value (ACV) pays the cost to replace the item minus depreciation."
+      }
+    }]
+  };
+
+  return (
+    <div className="bg-white animate-fade-in">
+      <SEOHead 
+        title="Homeowners Insurance in Florida | Protect Your Home | K2" 
+        description="Get the best homeowners insurance quotes in Florida. Understand your coverage, deductibles, and RCV vs ACV. Call K2 Insurance today." 
+        schema={schema}
+      />
+      
+      {/* Page Header */}
+      <div className="bg-blue-900 py-20 text-white">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <span className="text-orange-400 font-bold tracking-wider uppercase text-sm mb-4 block">Personal Lines</span>
+          {/* Strict single H1 rule */}
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Homeowners Insurance in Florida</h1>
+          <p className="text-xl text-blue-100 mb-8 leading-relaxed">Protect your sanctuary. We navigate the complex Florida market to find you robust coverage at competitive rates from trusted carriers.</p>
+          <button onClick={() => navigate('contact')} className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-xl inline-flex items-center">
+            Get a Home Quote <ArrowRight className="ml-2" size={20}/>
+          </button>
+        </div>
+      </div>
+
+      {/* Content Body - Semantic structure (H2, H3) */}
+      <div className="container mx-auto px-4 py-20 max-w-6xl">
+        <div className="grid lg:grid-cols-3 gap-12">
+          
+          <div className="lg:col-span-2 space-y-12">
+            <section>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center"><Shield className="text-blue-500 mr-3" size={32}/> Understanding Your Coverage</h2>
+              <p className="text-lg text-slate-700 leading-relaxed mb-6">
+                A standard homeowners policy (HO-3) in Florida typically includes several key areas of protection. It's not just about the structure itself; it's about your financial security.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="font-bold text-xl text-slate-900 mb-2">Dwelling (Coverage A)</h3>
+                  <p className="text-slate-600">Covers the physical structure of your home (roof, walls, foundation) against covered perils like fire or windstorms.</p>
+                </div>
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="font-bold text-xl text-slate-900 mb-2">Personal Property (Coverage C)</h3>
+                  <p className="text-slate-600">Protects your belongings inside the home—furniture, electronics, clothing—if damaged or stolen.</p>
+                </div>
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="font-bold text-xl text-slate-900 mb-2">Liability (Coverage E)</h3>
+                  <p className="text-slate-600">Financial protection if someone is injured on your property and sues you.</p>
+                </div>
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                  <h3 className="font-bold text-xl text-slate-900 mb-2">Loss of Use (Coverage D)</h3>
+                  <p className="text-slate-600">Pays for temporary living expenses if your home becomes uninhabitable due to a covered loss.</p>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">What is NOT Covered?</h2>
+              <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-xl mb-6">
+                <div className="flex items-start">
+                  <AlertTriangle className="text-red-500 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold text-red-900 text-lg mb-2">Flood Damage is Excluded</h3>
+                    <p className="text-red-800">
+                      Standard homeowners policies strictly exclude damage caused by rising water/floods. <button onClick={() => navigate('solution-flood')} className="underline font-bold hover:text-red-900">You must purchase a separate Flood Insurance policy.</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-slate-700">Other common exclusions include earth movement (sinkholes usually require optional coverage), pest damage, and general wear and tear.</p>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">Crucial Concepts: RCV vs. ACV</h2>
+              <p className="text-slate-700 mb-4">When insuring your property, how your claim is paid out makes a massive difference.</p>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <CheckCircle className="text-blue-500 mr-3 mt-1 flex-shrink-0"/>
+                  <div>
+                    <strong className="text-slate-900">Replacement Cost Value (RCV):</strong> 
+                    <p className="text-slate-600">Pays to replace your damaged property with new materials of similar kind and quality at today's prices, without deducting for depreciation. <em>(Highly Recommended)</em></p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="text-slate-400 mr-3 mt-1 flex-shrink-0"/>
+                  <div>
+                    <strong className="text-slate-900">Actual Cash Value (ACV):</strong> 
+                    <p className="text-slate-600">Pays the replacement cost minus depreciation. If your 10-year-old roof is destroyed, you only get what a 10-year-old roof is worth today. <em>(Can lead to massive out-of-pocket costs)</em></p>
+                  </div>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          {/* Sticky Sidebar / Lead Gen */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-28 bg-slate-50 p-8 rounded-2xl border border-slate-200 shadow-lg">
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">Get a Fast Quote</h3>
+              <p className="text-slate-600 mb-6 text-sm">Compare rates from Olympus, Citizens, and 10+ more Florida carriers.</p>
+              
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                  <input type="text" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="John Doe" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Property Address</label>
+                  <input type="text" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="123 Main St" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                  <input type="email" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="john@example.com" />
+                </div>
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition mt-4">
+                  Request Quote Now
+                </button>
+              </form>
+              
+              <div className="mt-6 text-center border-t border-slate-200 pt-6">
+                <p className="text-sm text-slate-500 mb-2">Prefer to talk?</p>
+                <a href="tel:8005550199" className="text-xl font-bold text-blue-900 hover:text-blue-700 flex justify-center items-center">
+                  <Phone size={20} className="mr-2"/> (800) 555-0199
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------
+// MONEY PAGE 2: FLOOD INSURANCE (Aggressive Education per prompt)
+// ------------------------------------------------------------------
+function FloodPage({ navigate }) {
+  return (
+    <div className="bg-white animate-fade-in">
+      <SEOHead 
+        title="Flood Insurance Florida | NFIP & Private Quotes | K2" 
+        description="Flood is NOT covered by home insurance. Learn about Florida flood zones, NFIP vs Private Flood, and get a fast quote to protect your home from water damage." 
+      />
+      
+      {/* Page Header */}
+      <div className="bg-slate-900 py-20 text-white border-b-8 border-blue-500">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <Droplets size={48} className="mx-auto text-blue-400 mb-6" />
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Flood Insurance in Florida</h1>
+          <p className="text-2xl text-red-400 font-bold mb-4">Warning: Flood is NOT covered under your homeowners insurance.</p>
+          <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-2xl mx-auto">
+            Just one inch of water can cause $25,000 in damage. Don't wait until a named storm is approaching. Secure your flood policy today.
+          </p>
+          <button onClick={() => navigate('contact')} className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-xl inline-flex items-center">
+            Check My Flood Risk & Get Quote <ArrowRight className="ml-2" size={20}/>
+          </button>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-20 max-w-5xl">
+        <div className="space-y-16">
+          
+          {/* Education Block 1 */}
+          <section className="text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-slate-900 mb-6">The Hard Truth About Flooding in Florida</h2>
+            <p className="text-lg text-slate-700 mb-4">
+              Many homeowners mistakenly believe their standard policy covers hurricane storm surge or heavy rain overflow. <strong>It does not.</strong> If rising water enters your home from the outside, you need a dedicated flood insurance policy to cover the damages.
+            </p>
+            <p className="text-lg text-slate-700">
+              Furthermore, over 20% of all flood claims come from properties located in low-to-moderate risk zones (Zone X). Everyone in Florida lives in a flood zone; the only question is the level of risk.
+            </p>
+          </section>
+
+          {/* NFIP vs Private - Critical Comparison */}
+          <section className="bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-200">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">NFIP vs. Private Flood Insurance</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 font-bold text-xl">NFIP</div>
+                <h3 className="text-xl font-bold mb-4">National Flood Insurance Program</h3>
+                <ul className="space-y-3 text-slate-700">
+                  <li className="flex items-start"><CheckCircle size={18} className="text-slate-400 mr-2 mt-1"/> Government-backed stability</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-slate-400 mr-2 mt-1"/> Max Dwelling Coverage: $250,000</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-slate-400 mr-2 mt-1"/> Max Contents Coverage: $100,000</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-red-400 mr-2 mt-1"/> Strict 30-day waiting period</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-red-400 mr-2 mt-1"/> Does not cover Additional Living Expenses (ALE)</li>
                 </ul>
-            </nav>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-200 relative">
+                <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl">Often Better Coverage</div>
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center mb-4 font-bold text-xl">PRO</div>
+                <h3 className="text-xl font-bold mb-4">Private Flood Market</h3>
+                <ul className="space-y-3 text-slate-700">
+                  <li className="flex items-start"><CheckCircle size={18} className="text-green-500 mr-2 mt-1"/> Carriers like Neptune & Palomar</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-green-500 mr-2 mt-1"/> Dwelling coverage up to $2,000,000+</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-green-500 mr-2 mt-1"/> Shorter waiting periods (0 to 14 days)</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-green-500 mr-2 mt-1"/> Can include Additional Living Expenses (ALE)</li>
+                  <li className="flex items-start"><CheckCircle size={18} className="text-green-500 mr-2 mt-1"/> Often cheaper rates for non-AE zones</li>
+                </ul>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Waiting Period Warning */}
+          <section className="bg-orange-50 p-8 rounded-2xl border border-orange-200 text-center">
+            <AlertTriangle className="mx-auto text-orange-500 mb-4" size={40} />
+            <h2 className="text-2xl font-bold text-orange-900 mb-4">Beware the Waiting Period</h2>
+            <p className="text-orange-800 mb-6 max-w-2xl mx-auto">
+              You cannot buy flood insurance when a hurricane is in the Gulf. The NFIP enforces a strict <strong>30-day waiting period</strong> before coverage takes effect. While some private markets have shorter wait times, nearly all will place a moratorium on binding new policies if a storm is approaching Florida.
+            </p>
+            <button onClick={() => navigate('contact')} className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-bold transition">
+              Act Now - Get a Quote
+            </button>
+          </section>
+
         </div>
-    </header>
+      </div>
+    </div>
+  );
+}
 
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <img src="assets/img/banner.png" alt="K2 Insurance Banner" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
-                <h1>Protecting What Matters Most</h1>
-                <p>K2 Insurance has been your trusted partner for comprehensive insurance solutions. We provide personalized coverage for individuals, families, and businesses with competitive rates and exceptional service.</p>
-                <a href="contact.html#quote" class="btn btn-primary">Get Your Free Quote</a>
-            </div>
-        </section>
+// ------------------------------------------------------------------
+// GENERIC FALLBACK PAGE (For mock links)
+// ------------------------------------------------------------------
+function GenericPage({ title }) {
+  return (
+    <div className="py-24 text-center container mx-auto px-4 min-h-[60vh] flex flex-col items-center justify-center animate-fade-in">
+      <FileText size={64} className="text-blue-200 mb-6" />
+      <h1 className="text-4xl font-bold text-slate-900 mb-4">{title}</h1>
+      <p className="text-slate-500 max-w-xl mx-auto mb-8">
+        This is a placeholder page demonstrating the site architecture. In a fully developed CMS, this would contain SEO-optimized, long-form content targeting specific long-tail keywords (e.g., "best commercial insurance broker near me" or "umbrella policy explained").
+      </p>
+      <div className="bg-blue-50 text-blue-800 p-6 rounded-xl border border-blue-100 max-w-md w-full">
+         <h3 className="font-bold mb-2">SEO Blueprint for this page:</h3>
+         <ul className="text-sm text-left list-disc pl-5 space-y-1">
+           <li>Dedicated Keyword Strategy</li>
+           <li>H1, H2, H3 semantic structure</li>
+           <li>Internal links to core money pages</li>
+           <li>Optimized meta description & Title Tag</li>
+         </ul>
+      </div>
+    </div>
+  );
+}
 
-        <!-- Services Overview -->
-        <section class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Our Insurance Services</h2>
-                    <p class="section-subtitle">Comprehensive coverage options tailored to your unique needs</p>
-                </div>
-                
-                <div class="services-grid">
-                    <div class="service-card">
-                        <div class="service-icon">🚗</div>
-                        <h3>Auto Insurance</h3>
-                        <p>Protect your vehicle with comprehensive auto insurance coverage. Get competitive rates and excellent customer service.</p>
-                        <a href="services.html#auto" class="btn btn-outline">Learn More</a>
-                    </div>
-                    
-                    <div class="service-card">
-                        <div class="service-icon">🏠</div>
-                        <h3>Home Insurance</h3>
-                        <p>Safeguard your home and belongings with our comprehensive home insurance policies designed for your protection.</p>
-                        <a href="services.html#home" class="btn btn-outline">Learn More</a>
-                    </div>
-                    
-                    <div class="service-card">
-                        <div class="service-icon">👨‍👩‍👧‍👦</div>
-                        <h3>Life Insurance</h3>
-                        <p>Secure your family's future with our life insurance options. Choose from term, whole life, and universal policies.</p>
-                        <a href="services.html#life" class="btn btn-outline">Learn More</a>
-                    </div>
-                    
-                    <div class="service-card">
-                        <div class="service-icon">🏢</div>
-                        <h3>Business Insurance</h3>
-                        <p>Protect your business with comprehensive commercial insurance coverage tailored to your industry needs.</p>
-                        <a href="services.html#business" class="btn btn-outline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Why Choose Us -->
-        <section class="section" style="background-color: var(--gray-50);">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Why Choose K2 Insurance?</h2>
-                    <p class="section-subtitle">Experience the difference of working with a trusted insurance partner</p>
-                </div>
-                
-                <div class="grid-3">
-                    <div class="card">
-                        <h3>Expert Guidance</h3>
-                        <p>Our experienced agents provide personalized advice to help you choose the right coverage for your needs and budget.</p>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Competitive Rates</h3>
-                        <p>We work with top-rated insurance companies to bring you the best rates and coverage options available.</p>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>24/7 Support</h3>
-                        <p>Our dedicated customer service team is available around the clock to assist you with claims and questions.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="section">
-            <div class="container text-center">
-                <h2>Ready to Get Started?</h2>
-                <p class="mb-6">Get a free quote today and discover how K2 Insurance can protect what matters most to you.</p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="contact.html#quote" class="btn btn-primary">Get Free Quote</a>
-                    <a href="tel:+1-555-123-4567" class="btn btn-secondary">Call (555) 123-4567</a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>K2 Insurance</h3>
-                    <p>Your trusted partner for comprehensive insurance solutions. We're committed to protecting what matters most to you.</p>
-                    <p><strong>Phone:</strong> (555) 123-4567</p>
-                    <p><strong>Email:</strong> info@k2insurance.com</p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <p><a href="about.html">About Us</a></p>
-                    <p><a href="services.html">Our Services</a></p>
-                    <p><a href="contact.html">Contact</a></p>
-                    <p><a href="companies.html">Insurance Companies</a></p>
-                    <p><a href="faq.html">FAQ</a></p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Services</h3>
-                    <p><a href="services.html#auto">Auto Insurance</a></p>
-                    <p><a href="services.html#home">Home Insurance</a></p>
-                    <p><a href="services.html#life">Life Insurance</a></p>
-                    <p><a href="services.html#business">Business Insurance</a></p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Contact Info</h3>
-                    <p>123 Insurance Street<br>Suite 100<br>Anytown, ST 12345</p>
-                    <p>Monday - Friday: 8:00 AM - 6:00 PM<br>Saturday: 9:00 AM - 2:00 PM<br>Sunday: Closed</p>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; <span id="current-year">2024</span> K2 Insurance. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript -->
-    <script src="assets/js/main.js"></script>
-</body>
-</html>
+// ------------------------------------------------------------------
+// UI COMPONENTS
+// ------------------------------------------------------------------
+function ServiceCard({ icon, title, desc, onClick, featured }) {
+  return (
+    <div 
+      onClick={onClick}
+      className={`p-8 rounded-2xl border transition cursor-pointer flex flex-col h-full
+        ${featured 
+          ? 'bg-blue-900 text-white border-blue-800 shadow-xl shadow-blue-900/20 transform md:-translate-y-2' 
+          : 'bg-white text-slate-900 border-slate-200 hover:border-blue-500 hover:shadow-lg'}`}
+    >
+      <div className={`mb-6 p-4 rounded-xl inline-block ${featured ? 'bg-blue-800 text-blue-300' : 'bg-blue-50 text-blue-600'}`}>
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold mb-3">{title}</h3>
+      <p className={`flex-grow ${featured ? 'text-blue-100' : 'text-slate-600'}`}>{desc}</p>
+      <div className={`mt-6 font-semibold flex items-center text-sm ${featured ? 'text-orange-400' : 'text-blue-600'}`}>
+        Learn More <ArrowRight size={16} className="ml-1" />
+      </div>
+    </div>
+  );
+}
